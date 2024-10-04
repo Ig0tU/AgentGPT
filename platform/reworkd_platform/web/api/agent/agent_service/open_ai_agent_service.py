@@ -18,7 +18,7 @@ from reworkd_platform.web.api.agent.agent_service.agent_service import AgentServ
 from reworkd_platform.web.api.agent.analysis import Analysis, AnalysisArguments
 from reworkd_platform.web.api.agent.helpers import (
     call_model_with_handling,
-    openai_error_handler,
+    huggingface_error_handler,
     parse_with_handling,
 )
 from reworkd_platform.web.api.agent.model_factory import WrappedChatOpenAI
@@ -102,7 +102,7 @@ class OpenAIAgentService(AgentService):
             str(functions),
         )
 
-        message = await openai_error_handler(
+        message = await huggingface_error_handler(
             func=self.model.apredict_messages,
             messages=prompt.to_messages(),
             functions=functions,

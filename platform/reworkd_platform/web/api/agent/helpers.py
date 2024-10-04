@@ -3,7 +3,7 @@ from typing import Any, Callable, Dict, TypeVar
 from langchain import BasePromptTemplate, LLMChain
 from langchain.chat_models.base import BaseChatModel
 from langchain.schema import BaseOutputParser, OutputParserException
-from openai.error import (
+from huggingface_hub import HfApi, HfHubError (
     AuthenticationError,
     InvalidRequestError,
     RateLimitError,
@@ -25,7 +25,7 @@ def parse_with_handling(parser: BaseOutputParser[T], completion: str) -> T:
         )
 
 
-async def openai_error_handler(
+async def huggingface_error_handler(
     func: Callable[..., Any], *args: Any, settings: ModelSettings, **kwargs: Any
 ) -> Any:
     try:
@@ -73,4 +73,4 @@ async def call_model_with_handling(
     **kwargs: Any,
 ) -> str:
     chain = LLMChain(llm=model, prompt=prompt)
-    return await openai_error_handler(chain.arun, args, settings=settings, **kwargs)
+    return await huggingface_error_handler(chain.arun, args, settings=settings, **kwargs)

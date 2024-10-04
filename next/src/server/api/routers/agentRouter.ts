@@ -1,4 +1,4 @@
-import OpenAI from "openai";
+import { HfInference } from "@huggingface/inference";
 import { z } from "zod";
 
 import { env } from "../../../env/server.mjs";

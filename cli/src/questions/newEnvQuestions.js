@@ -8,15 +8,8 @@ export const newEnvQuestions = [
         type: "input",
         name: "OpenAIApiKey",
         message:
-            "Enter your openai key (eg: sk...) or press enter to continue with no key:",
-        validate: async(apikey) => {
-            if(apikey === "") return true;
-
-            if(!isValidKey(apikey, /^sk-[a-zA-Z0-9]{48}$/)) {
-                return validKeyErrorMessage
-            }
-
-            const endpoint = "https://api.openai.com/v1/models"
+            "Enter your HuggingFace key (eg: hf_...) or press enter to continue with no key:",
+            const endpoint = "https://api-inference.huggingface.co/models"
             const response = await fetch(endpoint, {
                 headers: {
                     "Authorization": `Bearer ${apikey}`,

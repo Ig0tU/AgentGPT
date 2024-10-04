@@ -1,13 +1,13 @@
 import pytest
-from openai.error import InvalidRequestError, ServiceUnavailableError
+from huggingface_hub import HfApi, HfHubError
 
 from reworkd_platform.schemas.agent import ModelSettings
-from reworkd_platform.web.api.agent.helpers import openai_error_handler
+from reworkd_platform.web.api.agent.helpers import huggingface_error_handler
 from reworkd_platform.web.api.errors import OpenAIError
 
 
 async def act(*args, settings: ModelSettings = ModelSettings(), **kwargs):
-    return await openai_error_handler(*args, settings=settings, **kwargs)
+    return await huggingface_error_handler(*args, settings=settings, **kwargs)
 
 
 @pytest.mark.asyncio
@@ -35,7 +35,7 @@ async def test_should_log(settings, should_log):
         )
 
     with pytest.raises(Exception) as exc_info:
-        await openai_error_handler(
+        await huggingface_error_handler(
             mock_invalid_request_error_model_access, settings=settings
         )
 

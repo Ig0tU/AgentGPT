@@ -19,7 +19,7 @@ def test_helicone_enabled_without_custom_api_key():
     settings = Settings(
         helicone_api_key="some_key",
         helicone_api_base="helicone_base",
-        openai_api_base="openai_base",
+        huggingface_model_name="huggingface_model",
     )
 
     base, headers, use_helicone = get_base_and_headers(settings, model_settings, user)
@@ -30,7 +30,7 @@ def test_helicone_enabled_without_custom_api_key():
         "Helicone-Auth": "Bearer some_key",
         "Helicone-Cache-Enabled": "true",
         "Helicone-User-Id": "user_id",
-        "Helicone-OpenAI-Api-Base": "openai_base",
+        "Helicone-HuggingFace-Model-Name": "huggingface_model",
     }
 
 
@@ -40,7 +40,7 @@ def test_helicone_disabled():
     settings = Settings()
 
     base, headers, use_helicone = get_base_and_headers(settings, model_settings, user)
-    assert base == "https://api.openai.com/v1"
+    assert base == "https://api-inference.huggingface.co/models"
     assert headers is None
     assert use_helicone is False
 
@@ -51,14 +51,14 @@ def test_helicone_enabled_with_custom_api_key():
     )
     user = UserBase(id="user_id")
     settings = Settings(
-        openai_api_base="openai_base",
+        huggingface_model_name="huggingface_model",
         helicone_api_key="some_key",
         helicone_api_base="helicone_base",
     )
 
     base, headers, use_helicone = get_base_and_headers(settings, model_settings, user)
 
-    assert base == "https://api.openai.com/v1"
+    assert base == "https://api-inference.huggingface.co/models"
     assert headers is None
     assert use_helicone is False
 
@@ -84,16 +84,16 @@ def test_create_model(streaming, use_azure):
     settings.openai_api_base = (
         "https://api.openai.com" if not use_azure else "https://oai.azure.com"
     )
-    settings.openai_api_key = "key"
-    settings.openai_api_version = "version"
+    settings.huggingface_api_key = "key"
+    settings.huggingface_api_version = "version"
 
     result = create_model(settings, model_settings, user, streaming)
     assert issubclass(result.__class__, WrappedChatOpenAI)
     assert issubclass(result.__class__, ChatOpenAI)
 
     # Check if the required keys are set properly
-    assert result.openai_api_base == settings.openai_api_base
-    assert result.openai_api_key == settings.openai_api_key
+    assert result.huggingface_model_name == settings.huggingface_model_name
+    assert result.huggingface_api_key == settings.huggingface_api_key
     assert result.temperature == model_settings.temperature
     assert result.max_tokens == model_settings.max_tokens
     assert result.streaming == streaming
@@ -103,7 +103,7 @@ def test_create_model(streaming, use_azure):
     if use_azure:
         assert isinstance(result, WrappedAzureChatOpenAI)
         assert issubclass(result.__class__, AzureChatOpenAI)
-        assert result.openai_api_version == settings.openai_api_version
+        assert result.huggingface_api_version == settings.huggingface_api_version
         assert result.deployment_name == "gpt-35-turbo"
         assert result.openai_api_type == "azure"
 

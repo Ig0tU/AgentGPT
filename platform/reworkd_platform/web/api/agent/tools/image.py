@@ -1,6 +1,6 @@
 from typing import Any
 
-import openai
+from huggingface_hub import HfApi
 import replicate
 from fastapi.responses import StreamingResponse as FastAPIStreamingResponse
 from replicate.exceptions import ModelError
@@ -35,7 +35,7 @@ async def get_replicate_image(input_str: str) -> str:
 # Use AI to generate an Image based on a prompt
 async def get_open_ai_image(input_str: str) -> str:
     response = openai.Image.create(
-        api_key=settings.openai_api_key,
+        api_key=settings.huggingface_api_key,
         prompt=input_str,
         n=1,
         size="256x256",

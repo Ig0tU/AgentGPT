@@ -55,7 +55,7 @@ class Settings(BaseSettings):
     openai_api_base: str = "https://api.openai.com/v1"
     openai_api_key: str = "<Should be updated via env>"
     openai_api_version: str = "2023-08-01-preview"
-    azure_openai_deployment_name: str = "<Should be updated via env if using azure>"
+    huggingface_model_name: str = "<Should be updated via env if using HuggingFace>"
 
     # Helicone
     helicone_api_base: str = "https://oai.hconeai.com/v1"

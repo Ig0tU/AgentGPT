@@ -18,8 +18,8 @@ class WrappedChatOpenAI(ChatOpenAI):
 
 
 class WrappedAzureChatOpenAI(AzureChatOpenAI, WrappedChatOpenAI):
-    openai_api_base: str
-    openai_api_version: str
+    huggingface_model_name: str
+    huggingface_api_version: str
     deployment_name: str
 
 
@@ -34,15 +34,15 @@ def create_model(
     force_model: Optional[LLM_Model] = None,
 ) -> WrappedChat:
     use_azure = (
-        not model_settings.custom_api_key and "azure" in settings.openai_api_base
+        not model_settings.custom_api_key and "huggingface" in settings.huggingface_model_name
     )
 
     llm_model = force_model or model_settings.model
     model: Type[WrappedChat] = WrappedChatOpenAI
     base, headers, use_helicone = get_base_and_headers(settings, model_settings, user)
     kwargs = {
-        "openai_api_base": base,
-        "openai_api_key": model_settings.custom_api_key or settings.openai_api_key,
+        "huggingface_model_name": base,
+        "huggingface_api_key": model_settings.custom_api_key or settings.huggingface_api_key,
         "temperature": model_settings.temperature,
         "model": llm_model,
         "max_tokens": model_settings.max_tokens,
@@ -56,10 +56,10 @@ def create_model(
         deployment_name = llm_model.replace(".", "")
         kwargs.update(
             {
-                "openai_api_version": settings.openai_api_version,
+                "huggingface_api_version": settings.huggingface_api_version,
                 "deployment_name": deployment_name,
-                "openai_api_type": "azure",
-                "openai_api_base": base.rstrip("v1"),
+                "huggingface_api_type": "huggingface",
+                "huggingface_model_name": base.rstrip("v1"),
             }
         )
 
@@ -88,7 +88,7 @@ def get_base_and_headers(
             "Helicone-Auth": f"Bearer {settings_.helicone_api_key}",
             "Helicone-Cache-Enabled": "true",
             "Helicone-User-Id": user.id,
-            "Helicone-OpenAI-Api-Base": settings_.openai_api_base,
+            "Helicone-HuggingFace-Model-Name": settings_.huggingface_model_name,
         }
         if use_helicone
         else None
